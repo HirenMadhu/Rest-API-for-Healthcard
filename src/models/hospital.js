@@ -5,7 +5,6 @@ const hospitalSchema = new mongoose.Schema({
     name:{
         type: String,
         required : true,
-        trim: true
     },
     phoneNo:{
         type: Number,
@@ -42,5 +41,15 @@ const hospitalSchema = new mongoose.Schema({
     }],
     cases_handled:[{
         type: String
-    }]
+    }],
+    password:{
+        type:Number,
+        required: true,
+        min: 100000,
+        max: 999999
+    }
 }) 
+
+const Hospital = new mongoose.model('Hospital', hospitalSchema)
+
+module.exports = Hospital

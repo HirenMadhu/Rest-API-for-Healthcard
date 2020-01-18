@@ -3,9 +3,8 @@ const validator = require('validator')
 
 const doctorSchema = new mongoose.Schema({
     name: {
-        type:String,
-        required:true,
-        trim:true
+       firstName:{type:String, required:true},
+       lastName:{type:String, required:true}
     },
     contact_no:{
         type: Number,
