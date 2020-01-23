@@ -8,6 +8,13 @@ mongoose.connect('mongodb+srv://hiren:j5ZmZHQdO2DiLSqQ@healthcard-8awwz.mongodb.
 }).catch(()=>{
     console.log('cant connect')
 })
-
+//hey 
 
 require('../models/doctor')
+require('../models/hospital')
+require('../models/lab')
+require('../models/labDoctor')
+require('../models/labReport')
+require('../models/medical')
+require('../models/medicalBill')
+require('../models/patient')
