@@ -1,6 +1,14 @@
 const express = require('express')
 require('./db/mongoose')
 const doctorRouter = require('./routers/doctor')
+const caseRouter=require('./routers/case')
+const hospitalRouter=require('./routers/hospital')
+const labRouter=require('./routers/lab')
+const labDoctorRouter=require('./routers/labDoctor')
+const labReportRouter=require('./routers/labReport')
+const medicalRouter=require('./routers/medical')
+const medicalBillRouter=require('./routers/medicalBill')
+const patientRouter=require('./routers/patient')
 
 const app = express()
 
@@ -11,8 +19,16 @@ app.use((req,res,next) => {
     }
     next()
 })
-
+app.use(express.json())
 app.use(doctorRouter)
+app.use(caseRouter)
+app.use(labDoctorRouter)
+app.use(hospitalRouter)
+app.use(labRouter)
+app.use(labReportRouter)
+app.use(medicalRouter)
+app.use(medicalBillRouter)
+app.use(patientRouter)
 
 app.listen(3000,()=>{
     console.log('Listening to port 3000')
