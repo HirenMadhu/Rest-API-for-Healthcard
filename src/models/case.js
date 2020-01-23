@@ -16,6 +16,7 @@ const caseSchema = new mongoose.Schema({
     },
     Date_time:{
         type: Date,
+    },
     probelm_description:{
         type: String,
         required: true
@@ -40,7 +41,6 @@ const caseSchema = new mongoose.Schema({
         type: Date
     }
 })
-
 
 const Case = new mongoose.model('Case',caseSchema)
   

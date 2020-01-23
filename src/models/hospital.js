@@ -10,7 +10,7 @@ const hospitalSchema = new mongoose.Schema({
         type: Number,
         required: true,
         validator(value){
-            if(value.length != 11){
+            if(value.toString().length != 11){
                 throw new error('Invalid Phone Number')
             }
         }

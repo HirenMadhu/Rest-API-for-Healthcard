@@ -29,3 +29,7 @@ const labReportSchema = new mongoose.Schema({
         ideal: String,
     }]
 })
+
+const LabReport = new mongoose.model('LabReport', labReportSchema)
+
+module.exports = LabReport

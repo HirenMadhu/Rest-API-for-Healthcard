@@ -1,13 +1,14 @@
 const express = require('express')
-const lab = require('../models/medical')
+const Medical = require('../models/medical')
 
 const router = new express.Router()
 
 router.post('/medical',async(req,res)=>{
-    const Lab= new lab(req.body)
+    const medical= new Medical(req.body)
+    console.log(medical)
     try{
             await medical.save()
-            res.status(200).send(Lab)
+            res.status(200).send(medical)
     }catch(e){
             res.status(400).send()
     }

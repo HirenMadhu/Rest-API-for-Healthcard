@@ -3,7 +3,7 @@ const Doctor = require('../models/doctor')
 
 const router = new express.Router()
 
-router.post('/doc',async (req,res)=>{
+router.post('/doctor',async (req,res)=>{
     const doctor = new Doctor(req.body)
     console.log(doctor)
     try{

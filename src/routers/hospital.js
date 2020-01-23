@@ -5,6 +5,7 @@ const router = new express.Router()
 
 router.post('/hospital',async(req,res)=>{
     const hospital= new Hospital(req.body)
+    console.log(hospital)
     try{
             await hospital.save()
             res.status(200).send(hospital)

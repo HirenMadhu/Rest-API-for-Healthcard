@@ -12,7 +12,6 @@ router.post('/case',async (req,res)=>{
         
     }catch(e){
         res.status(401).send(e)
-        //console.log(e)
     }
 })
 

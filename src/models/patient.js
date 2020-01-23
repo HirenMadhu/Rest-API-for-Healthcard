@@ -10,7 +10,7 @@ const patientSchema = new mongoose.Schema({
          type: Number,
          required: true,
          validate(value){
-             if(value.length!=10){
+             if(value.toString().length!=10){
                  throw new Error('Invalid concact no!')
              }
          }
@@ -67,6 +67,6 @@ const patientSchema = new mongoose.Schema({
      }]
 })
 
-const Patient = new mongoose.Model('Patient', patientSchema)
+const Patient = new mongoose.model('Patient', patientSchema)
 
 module.exports = Patient

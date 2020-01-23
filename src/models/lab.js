@@ -10,7 +10,7 @@ const labSchema = new mongoose.Schema({
         type: Number,
         required: true,
         validator(value){
-            if(value.length != 11){
+            if(value.toString().length != 11){
                 throw new error('Invalid Phone Number')
             }
         }
@@ -42,7 +42,13 @@ const labSchema = new mongoose.Schema({
     }],
     reportHistory:[{
         type:String
-    }]
+    }],
+    password:{
+        type:Number,
+        required: true,
+        min: 100000,
+        max: 999999
+    }
 })
 
 const Lab = mongoose.model('Lab', labSchema)
