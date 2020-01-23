@@ -32,10 +32,11 @@ const labSchema = new mongoose.Schema({
         city:String,
         pincode: Number,
     },
-//     type:{
-//         type:String,
-//         required: true,
-//    }, 
+    type:{
+        type:String,
+        required: true,
+    },
+
     labDoctors:[{
         type:String
     }],

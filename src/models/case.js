@@ -16,15 +16,13 @@ const caseSchema = new mongoose.Schema({
     },
     Date_time:{
         type: Date,
-      //  required: true
-    },
     probelm_description:{
         type: String,
-      //  required: true
+        required: true
     },
     eval_and_cure:{
         type: String,
-       // required: true
+        required: true
     },
     viral_disease:{
         type: String,
@@ -43,6 +41,7 @@ const caseSchema = new mongoose.Schema({
     }
 })
 
-const Case = new mongoose.model('Case',caseSchema)
 
+const Case = new mongoose.model('Case',caseSchema)
+  
 module.exports = Case

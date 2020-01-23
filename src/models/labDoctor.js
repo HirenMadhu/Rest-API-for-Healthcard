@@ -10,6 +10,7 @@ const labDoctorSchema = mongoose.Schema({
         type: Number,
         required: true,
         validate(value){
+
             if(value.toString().length!=10){
                 throw new Error('Invalid concact no!')
             }
