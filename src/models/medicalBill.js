@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const medicalBillSchema = mongoose.Schema({
+    MBID:{
+        type: String,
+        required: true
+    },
     HCID:{
         type:String,
         required: true

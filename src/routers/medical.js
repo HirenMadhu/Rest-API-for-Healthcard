@@ -10,7 +10,7 @@ router.post('/medical',async(req,res)=>{
             await medical.save()
             res.status(200).send(medical)
     }catch(e){
-            res.status(400).send()
+            res.status(400).send(e)
     }
 })
 

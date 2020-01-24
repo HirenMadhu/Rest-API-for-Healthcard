@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const caseSchema = new mongoose.Schema({
+    CID:{
+        type: String,
+        required: true
+    },
     HCID : {
         type: String,
         required: true

@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const labDoctorSchema = mongoose.Schema({
+    LDID:{
+        type: String,
+        required: true
+    },
     name: {
         firstName:{type:String, required:true},
         lastName:{type:String, required:true}

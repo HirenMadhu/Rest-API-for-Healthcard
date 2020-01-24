@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const hospitalSchema = new mongoose.Schema({
+    HID:{
+        type: String,
+        required: true
+    },
     name:{
         type: String,
         required : true,

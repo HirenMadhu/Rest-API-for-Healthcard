@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const labReportSchema = new mongoose.Schema({
+    LRID:{
+        type: String,
+        required: true
+    },
     HCID:{
         type:String,
         required: true
