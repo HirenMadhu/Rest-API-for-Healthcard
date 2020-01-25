@@ -57,18 +57,22 @@ const patientSchema = new mongoose.Schema({
         problem_surgery: String,
         year: Number
      }],
-     treatmentHistory:[{
-        type:String
-     }],
-     labHistory:[{
-        type:String
-     }],
-     medicineHistory:[{
-         type:String
-     }],
-     ongoingMedicines:[{
-         type:String
-     }]
+     treatmentHistory:{
+        type: Array,
+        default:[]
+     },
+     labHistory:{
+        type: Array,
+        default:[]
+     },
+     medicineHistory:{
+        type: Array,
+        default:[]
+     },
+     ongoingMedicines:{
+        type: Array,
+        default:[]
+     }
 })
 
 const Patient = new mongoose.model('Patient', patientSchema)

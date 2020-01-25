@@ -42,9 +42,10 @@ const doctorSchema = new mongoose.Schema({
     HID:{
         type: String,
     },
-    cases_handled:[{
-        type: String
-    }],
+    cases_handled:{
+        type: Array,
+        default:[]
+    },
     password:{
         type:Number,
         required: true,

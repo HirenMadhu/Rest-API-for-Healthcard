@@ -40,13 +40,13 @@ const labSchema = new mongoose.Schema({
         type:String,
         required: true,
     },
-
     labDoctors:[{
         type:String
     }],
-    reportHistory:[{
-        type:String
-    }],
+    reportHistory:{
+        type: Array,
+        default:[]
+    },
     password:{
         type:Number,
         required: true,

@@ -6,6 +6,10 @@ const medicalBillSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    MID:{
+        type:String,
+        required:true
+    },
     HCID:{
         type:String,
         required: true

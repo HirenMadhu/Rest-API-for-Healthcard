@@ -36,9 +36,10 @@ const medicalSchema = new mongoose.Schema({
         city:String,
         pincode: Number,
     },
-    billHistory:[{
-        type:String
-    }],
+    billHistory:{
+        type: Array,
+        default:[]
+    },
     password:{
         type:Number,
         required: true,

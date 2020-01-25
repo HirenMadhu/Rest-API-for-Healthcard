@@ -40,12 +40,13 @@ const labDoctorSchema = mongoose.Schema({
         required: true,
         trim: true
     },
-    LDID:{
+    LID:{
         type:String
     },
-    cases_handled:[{
-        type: String
-    }],
+    reportHistory:{
+        type: Array,
+        default:[]
+    },
     password:{
         type:Number,
         required: true,
