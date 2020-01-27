@@ -7,6 +7,7 @@ const router = new express.Router()
 
 router.post('/medicalBill',async(req,res)=>{
     const medicalBill= new MedicalBill(req.body)
+    medicalBill.MBID = MedicalBill.getNextID()
     if(medicalBill.MID){
             try{
                 const medical = await Medical.findOne({"MID":medicalBill.MID})

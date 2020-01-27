@@ -9,15 +9,19 @@ const router = new express.Router()
 router.post('/labReport',async (req,res)=>{
     const labReport = new LabReport(req.body)
     console.log(labReport)
+    labReport.LRID = LabReport.getNextID()
     const labDoctor = await LabDoctor.findOne({"LDID":labReport.LDID})
     if(labDoctor){
         const lab = await Lab.findOne({"LID":labReport.LID})
             if(lab){
                 const patient = await Patient.findOne({"HCID":labReport.HCID})
                 if(patient){
-                    reportHistoryDoc = labDoctor.reportHistory.push(labReport.LRID)
-                    reportHistoryLab = lab.reportHistory.push(labReport.LRID)
-                    labHistory = patient.labHistory.push(labReport.LRID)
+                    console.log(labDoctor)
+                    console.log(lab)
+                    console.log(patient)
+                    reportHistoryDoc = labDoctor.reportHistory
+                    reportHistoryLab = lab.reportHistory
+                    labHistory = patient.labHistory
                     reportHistoryLab.push(labReport.LRID)
                     reportHistoryDoc.push(labReport.LRID)
                     labHistory.push(labReport.LRID)

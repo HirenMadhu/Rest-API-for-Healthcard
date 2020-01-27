@@ -6,6 +6,7 @@ const router = new express.Router()
 
 router.post('/doctor',async (req,res)=>{
     const doctor = new Doctor(req.body)
+    doctor.DID = Doctor.getNextID()
     if(doctor.HID){
         const hospital = await Hospital.findOne({"HID":doctor.HID})
         if(hospital){

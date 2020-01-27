@@ -1,10 +1,16 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 
+const prefix = 'C'
+var nextID = 1
+var ID = 'C000000'
+
+
 const caseSchema = new mongoose.Schema({
     CID:{
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     HCID : {
         type: String,
@@ -45,6 +51,29 @@ const caseSchema = new mongoose.Schema({
         type: Date
     }
 })
+
+caseSchema.statics.getNextID = function(){
+    if( nextID <10 ){
+        ID = prefix+ '00000'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<100){
+        ID = prefix+ '0000'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<1000){
+        ID = prefix+ '000'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<10000){
+        ID = prefix+ '00'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<100000){
+        ID = prefix+ '0'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<1000000){
+        ID = prefix + nextID.toString()
+        nextID += 1
+    }
+    return ID
+}
 
 const Case = new mongoose.model('Case',caseSchema)
   

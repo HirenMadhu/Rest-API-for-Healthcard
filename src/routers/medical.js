@@ -5,6 +5,7 @@ const router = new express.Router()
 
 router.post('/medical',async(req,res)=>{
     const medical= new Medical(req.body)
+    medical.MID = Medical.getNextID()
     console.log(medical)
     try{
             await medical.save()

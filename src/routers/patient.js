@@ -5,6 +5,7 @@ const router = new express.Router()
 
 router.post('/patient',async (req,res)=>{
     const patient = new Patient(req.body)
+    patient.HCID = Patient.getNextID()
     console.log(patient)
     try{
         await patient.save()

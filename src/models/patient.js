@@ -1,10 +1,15 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 
+const prefix = 'HC'
+var nextID = 1
+var ID = 'HC000000'
+
 const patientSchema = new mongoose.Schema({
     HCID:{
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     name: {
         firstName:{type:String, required:true},
@@ -74,6 +79,29 @@ const patientSchema = new mongoose.Schema({
         default:[]
      }
 })
+
+patientSchema.statics.getNextID = function(){
+    if( nextID <10 ){
+        ID = prefix+ '00000'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<100){
+        ID = prefix+ '0000'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<1000){
+        ID = prefix+ '000'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<10000){
+        ID = prefix+ '00'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<100000){
+        ID = prefix+ '0'.toString() + nextID.toString()
+        nextID += 1
+    }else if(nextID<1000000){
+        ID = prefix + nextID.toString()
+        nextID += 1
+    }
+    return ID
+}
 
 const Patient = new mongoose.model('Patient', patientSchema)
 

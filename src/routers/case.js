@@ -8,7 +8,7 @@ const router = new express.Router()
 
 router.post('/case',async (req,res)=>{
     const case1 = new Case(req.body)
-    
+    case1.CID = Case.getNextID()
     console.log(case1)
     try{
         const patient = await Patient.findOne({"HCID":case1.HCID})

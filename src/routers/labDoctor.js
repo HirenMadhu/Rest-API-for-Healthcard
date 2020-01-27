@@ -7,6 +7,7 @@ const router = new express.Router()
 router.post('/labDoctor',async(req,res)=>{
     const labDoctor= new LabDoctor(req.body)
     console.log(labDoctor)
+    labDoctor.LDID = LabDoctor.getNextID()
     if(labDoctor.LID){
         const lab = await Lab.findOne({"LID":labDoctor.LID})
         if(lab){

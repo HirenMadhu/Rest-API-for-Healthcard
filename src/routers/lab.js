@@ -5,6 +5,7 @@ const router = new express.Router()
 
 router.post('/lab',async(req,res)=>{
     const lab= new Lab(req.body)
+    lab.LID = Lab.getNextID()
     console.log(lab)
     try{
             await lab.save()
