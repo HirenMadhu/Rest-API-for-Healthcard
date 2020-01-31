@@ -30,9 +30,12 @@ const medicalBillSchema = mongoose.Schema({
         dosage:String,
         extra:String
     },
-    pescriptionPeriod:{
+    prescriptionPeriod:{
         amount: Number,
         period: String
+    },
+    prescriptionTill:{
+        type: Number
     }
 })
 

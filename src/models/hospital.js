@@ -36,7 +36,7 @@ const hospitalSchema = new mongoose.Schema({
             }
         }
     },
-    Address:{
+    address:{
         addressLine1:String,
         addressLine2:String,
         area:String,

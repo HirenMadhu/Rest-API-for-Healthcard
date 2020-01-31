@@ -7,22 +7,12 @@ const router = new express.Router()
 router.post('/doctor',async (req,res)=>{
     const doctor = new Doctor(req.body)
     doctor.DID = Doctor.getNextID()
-    if(doctor.HID){
-        const hospital = await Hospital.findOne({"HID":doctor.HID})
-        if(hospital){
-            const doctors = hospital.doctors
-            doctors.push(doctor.DID)
-            try{
-                await Hospital.findOneAndUpdate({"HID":doctor.HID}, {doctors})
-            }catch(e){
-                res.status(400).send()
-            }
-        }else{
-            throw new error('Hospital not found with HID:'+ doctor.HID)
-        }
-    }
     console.log(doctor)
     try{
+        const hospital = await Hospital.findOne({"HID":doctor.HID})
+        const doctors = hospital.doctors
+        doctors.push(doctor.DID)
+        await Hospital.findOneAndUpdate({"HID":doctor.HID}, {doctors})
         await doctor.save()
         res.status(200).send(doctor)
     }catch(e){
@@ -30,5 +20,37 @@ router.post('/doctor',async (req,res)=>{
     }
 })
 
+router.patch('/doctor/:id', async (req,res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name', 'contact_no','email', 'address','degree', 'HID', 'password']
+    const isValidOperation = updates.every((update)=>allowedUpdates.includes(update))
+
+    if(!isValidOperation){
+        return res.status(404).send({error:'Invalid Updates!'})
+    }
+        
+
+    try{
+        const doctor = await Doctor.findOne({DID: req.params.id})
+        if(!doctor){
+            return res.status(404).send({error:'doctor not found'})
+        }
+        if(doctor.HID){
+            const hospital = await Hospital.findOne({"HID":doctor.HID})
+            if(!hospital){
+                return res.status(404).send({error:'no hospital with such hospital ID found'})
+            }
+            hospital.doctors.push(req.params.id)
+            await hospital.save()
+        }
+        console.log(doctor)
+        updates.forEach((update)=> doctor[update] = req.body[update])
+        await doctor.save()
+        res.status(200).send(doctor)    
+    }catch(e){
+        res.status(400).send(e)
+        console.log(e)
+    }
+})
 
 module.exports = router

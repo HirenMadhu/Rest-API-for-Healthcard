@@ -31,5 +31,41 @@ router.post('/case',async (req,res)=>{
     }
 })
 
+router.patch('/case/:id', async (req,res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['DID', 'HCID','probelm_description', 'eval_and_cure','viral_disease', 'instructions', 'precribed_medicines','nextOPDDate']
+    const isValidOperation = updates.every((update)=>allowedUpdates.includes(update))
+
+    if(!isValidOperation){
+        return res.status(404).send({error:'Invalid Updates!'})
+    }
+        
+
+    try{
+        const case1 = await Case.findOne({CID: req.params.id})
+        if(!case1){
+            return res.status(404).send({error:'Case not found'})
+        }
+        const patient = await Patient.findOne({"HCID":case1.HCID})
+        if(!patient){
+            return res.status(404).send({error:'no patient with such patient ID found'})
+        }
+        const doctor = await Doctor.findOne({"DID":case1.DID})
+        if(!doctor){
+            return res.status(404).send({error:'no doctor with such doctor ID found'})
+        }
+        updates.forEach((update)=> case1[update] = req.body[update])
+        doctor.cases_handled.push(req.params.id)
+        patient.treatmentHistory.push(req.params.id)
+        await case1.save()
+        await doctor.save()
+        await patient.save()
+        res.status(200).send(case1)    
+    }catch(e){
+        res.status(400).send(e)
+        console.log(e)
+    }
+})
+
 
 module.exports = router
