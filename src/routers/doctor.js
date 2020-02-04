@@ -79,9 +79,7 @@ router.delete('/doctor/:id', async (req,res)=>{
 router.get('/doctor/profile', async(req,res)=>{
     try{
         const doctor = await Doctor.findOne({DID:req.body.DID})
-        console.log(JSON.stringify(doctor))
-        delete doctor.password
-        console.log(doctor)
+        var docstr = JSON.stringify(doctor)
         res.status(200).send(doctor)
     }catch(e){
         res.status(404).send(e)

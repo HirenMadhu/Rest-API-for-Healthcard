@@ -1,5 +1,8 @@
 const express = require('express')
 require('./db/mongoose')
+
+const port = process.env.PORT
+
 const doctorRouter = require('./routers/doctor')
 const caseRouter=require('./routers/case')
 const hospitalRouter=require('./routers/hospital')
@@ -30,6 +33,6 @@ app.use(medicalRouter)
 app.use(medicalBillRouter)
 app.use(patientRouter)
 
-app.listen(3000,()=>{
+app.listen(port,()=>{
     console.log('Listening to port 3000')
 })
