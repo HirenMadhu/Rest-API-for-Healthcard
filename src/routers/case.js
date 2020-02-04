@@ -68,4 +68,43 @@ router.patch('/case/:id', async (req,res) => {
 })
 
 
+router.delete('/case/:id', async (req,res)=>{
+    try{
+        const case1 = await Case.findOneAndDelete({CID:req.params.id})
+        if(!case1){
+            return res.status(404).send({error:'Cant find the case!'})
+        }
+        const patient = await Patient.findOne({HCID:case1.HCID})
+        if(!patient){
+            return res.status(404).send({error:'Cant find the Patient!'})
+        }
+        const doctor = await Doctor.findOne({DID:case1.DID})
+        if(!doctor){
+            return res.status(404).send({error:'Cant find the Doctor!'})
+        }
+        const hospital = await Hospital.findOne({HID:case1.HID})
+        if(!hospital){
+            return res.status(404).send({error:'Cant find the Hospital!'})
+        }
+        var index = patient.treatmentHistory.indexOf(case1.CID)
+        if(index > -1){
+            patient.treatmentHistory.splice(index, 1)
+        }
+        index = doctor.cases_handled.indexOf(case1.CID)
+        if(index > -1){
+            doctor.cases_handled.splice(index, 1)
+        }
+        index = hospital.cases_handled.indexOf(case1.CID)
+        if(index > -1){
+            hospital.cases_handled.splice(index, 1)
+        }
+        await doctor.save()
+        await hospital.save()
+        await patient.save()
+        res.status(200).send(case1)
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
 module.exports = router

@@ -53,4 +53,40 @@ router.patch('/doctor/:id', async (req,res) => {
     }
 })
 
+router.delete('/doctor/:id', async (req,res)=>{
+    try{
+        const doctor = await Doctor.findOneAndDelete({DID:req.params.id})
+        if(!doctor){
+            return res.status(404).send({error:'Cant find the Doctor!'})
+        }
+        if(doctor.HID){
+            const hospital = await Hospital.findOne({HID:doctor.HID})
+            if(!hospital){
+                return res.status(404).send({error:'Cant find the Hospital!'})
+            }
+            index = hospital.doctors.indexOf(doctor.DID)
+            if(index > -1){
+                hospital.doctors.splice(index, 1)
+            }       
+        }
+        await hospital.save()
+        res.status(200).send(doctor)
+    }catch(e){
+        res.status(400).send(e)
+    }
+})
+
+router.get('/doctor/profile', async(req,res)=>{
+    try{
+        const doctor = await Doctor.findOne({DID:req.body.DID})
+        console.log(JSON.stringify(doctor))
+        delete doctor.password
+        console.log(doctor)
+        res.status(200).send(doctor)
+    }catch(e){
+        res.status(404).send(e)
+        console.log(e)
+    }
+})
+
 module.exports = router

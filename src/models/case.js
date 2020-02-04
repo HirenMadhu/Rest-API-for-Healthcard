@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 
+var nextID=1
 const prefix = 'C'
-var nextID = 1
 var ID = 'C000000'
 
 
@@ -54,19 +54,19 @@ const caseSchema = new mongoose.Schema({
 
 caseSchema.statics.getNextID = function(){
     if( nextID <10 ){
-        ID = prefix+ '00000'.toString() + nextID.toString()
+        ID = prefix+ '00000' + nextID.toString()
         nextID += 1
     }else if(nextID<100){
-        ID = prefix+ '0000'.toString() + nextID.toString()
+        ID = prefix+ '0000' + nextID.toString()
         nextID += 1
     }else if(nextID<1000){
-        ID = prefix+ '000'.toString() + nextID.toString()
+        ID = prefix+ '000' + nextID.toString()
         nextID += 1
     }else if(nextID<10000){
-        ID = prefix+ '00'.toString() + nextID.toString()
+        ID = prefix+ '00' + nextID.toString()
         nextID += 1
     }else if(nextID<100000){
-        ID = prefix+ '0'.toString() + nextID.toString()
+        ID = prefix+ '0' + nextID.toString()
         nextID += 1
     }else if(nextID<1000000){
         ID = prefix + nextID.toString()

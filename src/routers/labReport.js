@@ -13,6 +13,7 @@ router.post('/labReport',async (req,res)=>{
     try{
         const lab = await Lab.findOne({"LID":labReport.LID})
         const patient = await Patient.findOne({"HCID":labReport.HCID})
+        const labDoctor = await LabDoctor.findOne({"LDID":labReport.LDID})
         console.log(labDoctor)
         console.log(lab)
         console.log(patient)
@@ -25,11 +26,11 @@ router.post('/labReport',async (req,res)=>{
         await Patient.findOneAndUpdate({"HCID":labReport.HCID}, {labHistory})
         await LabDoctor.findOneAndUpdate({"LRID":labReport.LRID}, {"reportHistory":reportHistoryDoc})
         await Lab.findOneAndUpdate({"LID":labReport.LID}, {"reportHistory":reportHistoryLab})
-        const labDoctor = await LabDoctor.findOne({"LDID":labReport.LDID})
         await labReport.save()
         res.status(200).send(labReport)
     }catch(e){
         res.status(400).send(e)
+        console.log(e)
     }
 })
 
