@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const sendMail = require('../emails/sendMail')
 
 const prefix = 'D'
 var nextID = 1
@@ -57,7 +58,17 @@ const doctorSchema = new mongoose.Schema({
         required: true,
         min: 100000,
         max: 999999
+    },
+    rand:{
+        type:Number
     }
+})
+
+doctorSchema.pre("save", async function (next){
+ 
+    const doctor = this
+    sendMail(doctor, 'doctor', doctor.rand)
+    next()
 })
 
 doctorSchema.statics.getNextID = function(){

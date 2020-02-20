@@ -1,6 +1,6 @@
 const express = require('express')
 const Hospital = require('../models/hospital')
-
+const nodemailer = require('nodemailer')
 const router = new express.Router()
 
 router.post('/hospital',async(req,res)=>{
@@ -34,6 +34,37 @@ router.patch('/hospital/:id', async(req,res)=>{
                 res.status(200).send()
         }catch(e){
                 res.status(400).send(e)
+        }
+})
+
+router.post('/sendMail', async(req,res)=>{
+        try{
+                const rand = Math.floor(Math.random() * 10)
+
+                let transporter = nodemailer.createTransport({
+                        service:'gmail', 
+                        auth: {
+                        user: 'sgh.healthcard@gmail.com', // generated ethereal user
+                        pass: 'theblackpearl' // generated ethereal password
+                        },
+                        tls:{
+                                rejectUnauthorized:false
+                        }  
+                }    
+                );
+                
+                let info = await transporter.sendMail({
+                        from: '"Health Card" <gsh.healthcard@gmail.com>', 
+                        to: "harshsodha90@gmail.com", 
+                        subject: "Welcome", 
+                        text: "Good morning", 
+                        html: output 
+                })
+                
+                console.log("Message sent: %s", info.messageId)
+                console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info))
+        }catch(e){
+                console.log(e)
         }
 })
 module.exports=router

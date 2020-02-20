@@ -11,12 +11,34 @@ router.post('/doctor',async (req,res)=>{
     try{
         const hospital = await Hospital.findOne({"HID":doctor.HID})
         const doctors = hospital.doctors
+        const rand = Math.floor(Math.random() * 10)
+        doctor.rand = rand
         doctors.push(doctor.DID)
+        console.log(doctor)
         await Hospital.findOneAndUpdate({"HID":doctor.HID}, {doctors})
         await doctor.save()
         res.status(200).send(doctor)
     }catch(e){
         res.status(400).send(e)
+    }
+})
+
+router.post('/doctor/verify',async (req,res)=>{
+    try
+    {
+        const doctor = await Doctor.findOne({"DID":req.body.DID})
+        console.log(doctor.rand)
+        if(doctor.rand==req.body.rand){
+            delete doctor.rand
+            await doctor.save()
+            res.status(200).send({msg:"verified doctor"})
+        }else{
+            await Doctor.findOneAndDelete({"DID":doctor.DID})
+            res.status(200).send({msg:"unable to verify, please re register"})
+        }
+    }catch(e){
+        res.status(400).send(e)
+        console.log(e)
     }
 })
 
@@ -28,8 +50,6 @@ router.patch('/doctor/:id', async (req,res) => {
     if(!isValidOperation){
         return res.status(404).send({error:'Invalid Updates!'})
     }
-        
-
     try{
         const doctor = await Doctor.findOne({DID: req.params.id})
         if(!doctor){
