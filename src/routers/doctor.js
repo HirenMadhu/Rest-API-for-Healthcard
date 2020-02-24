@@ -14,13 +14,10 @@ router.post('/doctor',async (req,res)=>{
     try{
         const hospital = await Hospital.findOne({"HID":doctor.HID})
         const doctors = hospital.doctors
-        const rand = Math.floor(Math.random() * 10)
-        doctor.rand = rand
         doctors.push(doctor.DID)
-        console.log(doctor)
         await Hospital.findOneAndUpdate({"HID":doctor.HID}, {doctors})
         await doctor.save()
-        sendMail(doctor, 'doctor', doctor.rand)
+        sendMail(doctor, 'doctor')
         res.status(200).send(doctor)
     }catch(e){
         res.status(400).send(e)
@@ -31,15 +28,15 @@ router.post('/doctor/verify',async (req,res)=>{
     try
     {
         const doctor = await Doctor.findOne({"DID":req.body.DID})
-        console.log(doctor.rand)
-        if(doctor.rand==req.body.rand){
-            delete doctor.rand
-            console.log(doctor)
+        if(doctor && !doctor.verificationDone){
+            doctor.password = req.body.password
+            doctor.verificationDone = true
             await doctor.save()
             res.status(200).send({msg:"verified doctor"})
+        }else if(!doctor){
+            res.status(200).send({msg:"unable to verify, please enter correct DID"})
         }else{
-            await Doctor.findOneAndDelete({"DID":doctor.DID})
-            res.status(200).send({msg:"unable to verify, please re register"})
+            res.status(200).send({msg:"DID already verified"})
         }
     }catch(e){
         res.status(400).send(e)

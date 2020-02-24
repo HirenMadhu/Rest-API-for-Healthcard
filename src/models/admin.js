@@ -4,15 +4,14 @@ const bcrypt=require('bcryptjs')
 const jwt=require('jsonwebtoken')
 
 
-const prefix = 'D'
+const prefix = 'A'
 var nextID = 1
 var ID = 'D000000'
 
 
-const doctorSchema = new mongoose.Schema({
-    DID:{
+const adminSchema = new mongoose.Schema({
+    AID:{
         type: String,
-        required: true,
         unique:true
     },
     name: {
@@ -43,17 +42,10 @@ const doctorSchema = new mongoose.Schema({
         street: String,
         city: String
     },
-    degree:{
+    qualification:{
         type: String,
         required: true,
         trim: true
-    },
-    HID:{
-        type: String,
-    },
-    cases_handled:{
-        type: Array,
-        default:[]
     },
     password:{
         type:String,
@@ -76,7 +68,7 @@ const doctorSchema = new mongoose.Schema({
     }]
 })
 
-doctorSchema.statics.getNextID = function(){
+adminSchema.statics.getNextID = function(){
     if( nextID <10 ){
         ID = prefix+ '00000' + nextID.toString()
         nextID += 1
@@ -99,48 +91,46 @@ doctorSchema.statics.getNextID = function(){
     return ID
 }
 
-doctorSchema.methods.generateAuthToken= async function(){
-    const doctor = this
-    const token=jwt.sign({_id:doctor._id.toString()},'thisismynewcourse')
-    doctor.tokens=doctor.tokens.concat({ token })
-    await doctor.save()
+adminSchema.methods.generateAuthToken= async function(){
+    const admin = this
+    const token=jwt.sign({_id:admin._id.toString()},'thisismynewcourse')
+    admin.tokens=admin.tokens.concat({ token })
+    await admin.save()
     return token
 }
 
-doctorSchema.statics.findByCredentials=async(email,password)=>{
+adminSchema.statics.findByCredentials=async(email,password)=>{
     try{
-    const doctor=await Doctor.findOne({email})
-    //console.log(doctor)
-
-    if(!doctor){
+    const admin=await Admin.findOne({email})
+    if(!admin){
         throw new Error('unable to login')
     }
 
-    const isMatch= await bcrypt.compare(password,doctor.password)
+    const isMatch= await bcrypt.compare(password,admin.password)
 
     if(!isMatch){
         throw new Error('unable to login')
     }
     console.log(isMatch)
-    return doctor
+    return admin
 }catch(e){
     console.log(e)
 }
 }
 
-doctorSchema.pre('save',async function (next){
+adminSchema.pre('save',async function (next){
 
-    const doctor = this
+    const admin = this
 
-    if(doctor.isModified('password')){
-        doctor.password = await bcrypt.hash(doctor.password,8)
+    if(admin.isModified('password')){
+        admin.password = await bcrypt.hash(admin.password,8)
        
     }
-    console.log(doctor.password)
+    console.log(admin.password)
     next()
 
 })
 
-const Doctor = mongoose.model('Doctor', doctorSchema)
+const Admin = mongoose.model('Admin', adminSchema)
 
-module.exports = Doctor
+module.exports = Admin

@@ -2,6 +2,7 @@ const express = require('express')
 const Patient = require('../models/patient')
 const jwt=require('jsonwebtoken')
 const auth=require('../middleware/auth')
+const sendMail = require('../emails/sendMail')
 
 const router = new express.Router()
 
@@ -11,7 +12,28 @@ router.post('/patient',async (req,res)=>{
     console.log(patient)
     try{
         await patient.save()
+        sendMail(patient, 'patient')
         res.status(200).send(patient)
+    }catch(e){
+        res.status(400).send(e)
+        console.log(e)
+    }
+})
+
+router.post('/patient/verify',async (req,res)=>{
+    try
+    {
+        const patient = await Patient.findOne({"DID":req.body.DID})
+        if(patient && !patient.verificationDone){
+            patient.password = req.body.password
+            patient.verificationDone = true
+            await patient.save()
+            res.status(200).send({msg:"verified patient"})
+        }else if(!patient){
+            res.status(200).send({msg:"unable to verify, please enter correct DID"})
+        }else{
+            res.status(200).send({msg:"DID already verified"})
+        }
     }catch(e){
         res.status(400).send(e)
         console.log(e)

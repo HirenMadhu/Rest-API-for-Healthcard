@@ -3,6 +3,7 @@ const LabDoctor = require('../models/labDoctor.js')
 const Lab = require('../models/lab')
 const jwt=require('jsonwebtoken')
 const auth=require('../middleware/auth')
+const sendMail = require('../emails/sendMail')
 
 const router = new express.Router()
 
@@ -15,11 +16,32 @@ router.post('/labDoctor',async(req,res)=>{
             const labDoctors = lab.labDoctors
             labDoctors.push(labDoctor.LID)
             await Lab.findOneAndUpdate({"LID":labDoctor.LID}, {labDoctors})
+            sendMail(labdoctor, 'labdoctor')
             await labDoctor.save()
             res.status(200).send(labDoctor)
     }catch(e){
             res.status(400).send(e)
             console.log(e)
+    }
+})
+
+router.post('/labdoctor/verify',async (req,res)=>{
+    try
+    {
+        const labdoctor = await LabDoctor.findOne({"DID":req.body.DID})
+        if(labdoctor && !labdoctor.verificationDone){
+            labdoctor.password = req.body.password
+            labdoctor.verificationDone = true
+            await labdoctor.save()
+            res.status(200).send({msg:"verified labdoctor"})
+        }else if(!labdoctor){
+            res.status(200).send({msg:"unable to verify, please enter correct DID"})
+        }else{
+            res.status(200).send({msg:"DID already verified"})
+        }
+    }catch(e){
+        res.status(400).send(e)
+        console.log(e)
     }
 })
 

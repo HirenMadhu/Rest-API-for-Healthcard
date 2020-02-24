@@ -132,9 +132,9 @@ patientSchema.methods.generateAuthToken= async function(){
 patientSchema.statics.findByCredentials=async(email,password)=>{
     try{
         const patient=await Patient.findOne({email})
-
+        console.log(patient)
         if(!patient){
-         throw new Error('unable to login')
+         return new Error('unable to login')
         }
 
         const isMatch= await bcrypt.compare(password,patient.password)

@@ -2,6 +2,7 @@ const express = require('express')
 const Hospital = require('../models/hospital')
 const jwt=require('jsonwebtoken')
 const auth=require('../middleware/auth')
+const sendMail = require('../emails/sendMail')
 
 const router = new express.Router()
 
@@ -11,10 +12,31 @@ router.post('/hospital',async(req,res)=>{
     console.log(hospital)
     try{
             await hospital.save()
+            sendMail(hospital, 'hospital')
             res.status(200).send(hospital)
     }catch(e){
             res.status(400).send(e)
     }
+})
+
+router.post('/hospital/verify',async (req,res)=>{
+        try
+        {
+            const hospital = await Hospital.findOne({"DID":req.body.DID})
+            if(hospital && !hospital.verificationDone){
+                hospital.password = req.body.password
+                hospital.verificationDone = true
+                await hospital.save()
+                res.status(200).send({msg:"verified hospital"})
+            }else if(!hospital){
+                res.status(200).send({msg:"unable to verify, please enter correct DID"})
+            }else{
+                res.status(200).send({msg:"DID already verified"})
+            }
+        }catch(e){
+            res.status(400).send(e)
+            console.log(e)
+        }
 })
 
 router.post('/hospital/login',async (req,res)=>{

@@ -2,6 +2,7 @@ const express = require('express')
 const Lab = require('../models/lab')
 const jwt=require('jsonwebtoken')
 const auth=require('../middleware/auth')
+const sendMail = require('../emails/sendMail')
 
 const router = new express.Router()
 
@@ -11,11 +12,32 @@ router.post('/lab',async(req,res)=>{
     console.log(lab)
     try{
             await lab.save()
+            sendMail(lab, 'lab')
             res.status(200).send(lab)
     }catch(e){
             res.status(400).send(e)
     }
 })
+
+router.post('/lab/verify',async (req,res)=>{
+        try
+        {
+            const lab = await Lab.findOne({"DID":req.body.DID})
+            if(lab && !lab.verificationDone){
+                lab.password = req.body.password
+                lab.verificationDone = true
+                await lab.save()
+                res.status(200).send({msg:"verified lab"})
+            }else if(!lab){
+                res.status(200).send({msg:"unable to verify, please enter correct DID"})
+            }else{
+                res.status(200).send({msg:"DID already verified"})
+            }
+        }catch(e){
+            res.status(400).send(e)
+            console.log(e)
+        }
+    })
 
 router.post('/lab/login',async (req,res)=>{
         try{

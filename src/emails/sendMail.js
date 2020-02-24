@@ -1,26 +1,36 @@
 const nodemailer = require('nodemailer')
 const generateMessage = require('./message')
-async function sendMail(user,strUser,rand)
+async function sendMail(user,strUser)
 {   
     var id =''
     var name = ''
-    if(strUser=='patient'){
-        id = user.HCID
-        name = user.name.firstName
-    }else if(strUser=='doctor'){
-        id = user.DID
-        name = user.name.firstName
-    }else if(strUser=='hospital'){
-        id = user.HID
-        name = user.name
-    }else if(strUser=='labdoctor'){
-        id = user.LDID
-        name = user.name.firstName
-    }else if(strUser=='lab'){
-        id = user.LID
-        name = user.name
+    switch(strUser.toLowerCase()){
+        case('patient'):
+            id = user.HCID
+            name = user.name.firstName
+            break
+        case('doctor'):
+            id = user.DID
+            name = user.name.firstName
+            break
+        case('labdoctor'):
+            id = user.LDID
+            name = user.name.firstName
+            break
+        case('lab'):
+            id = user.LID
+            name = user.name
+            break
+        case('medical'):
+            id = user.MID
+            name = user.name
+            break
+        case('hospital'):
+            id = user.HID
+            name = user.name
+            break
     }
-    msg = generateMessage(id,name,rand)
+    msg = generateMessage(id,name)
     try{
         let transporter = nodemailer.createTransport({
             service:'gmail', 
@@ -39,7 +49,7 @@ async function sendMail(user,strUser,rand)
             to: user.email, 
             subject: "Welcome", 
             html: msg 
-     })   
+        })   
         console.log("Message sent: %s", info.messageId)
         console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info))
     }catch(e){
