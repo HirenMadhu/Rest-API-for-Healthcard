@@ -78,7 +78,7 @@ const authLab=async(req,res,next)=>{
 const authPatient=async(req,res,next)=>{
     try{
         const token=req.header('Authorization').replace('Bearer ','')
-        const decoded= jwt.verify(token,'1')
+        const decoded= jwt.verify(token,'thisismynewcourse')
         const patient=await Patient.findOne({_id:decoded._id,'tokens.token':token})
         console.log(patient)
         if(!patient){
