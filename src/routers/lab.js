@@ -1,5 +1,7 @@
 const express = require('express')
 const Lab = require('../models/lab')
+const jwt=require('jsonwebtoken')
+const auth=require('../middleware/auth')
 
 const router = new express.Router()
 
@@ -15,6 +17,30 @@ router.post('/lab',async(req,res)=>{
     }
 })
 
+router.post('/lab/login',async (req,res)=>{
+        try{
+        const lab= await Lab.findByCredentials(req.body.email,req.body.password)
+        const token = await lab.generateAuthToken()
+        console.log(lab)
+        console.log(token)
+        res.send({lab,token})
+        }catch(e){
+            res.status(401).send(e)
+        }
+})
+    
+router.post('/lab/logout',auth.authLab,async (req,res)=>{
+        try{
+            req.lab.tokens=req.lab.tokens.filter((token)=>{
+                return token.token !== req.token 
+            })
+            await req.lab.save()
+            res.send(req.lab)
+        }catch(e){
+            res.status(400).send()
+        }
+})
+
 router.patch('/lab/:id', async(req,res)=>{
         const updates = Object.keys(req.body)
         const allowedUpdates = ['name', 'phoneNo','email', 'address','type', 'password']
@@ -27,7 +53,7 @@ router.patch('/lab/:id', async(req,res)=>{
         try{
                 const lab = await Lab.findOne({LID:req.params.id})
                 if(!lab){
-                        res.status(404).send({error:'Hospital not found'})
+                        res.status(404).send({error:'Lab not found'})
                 }
                 updates.forEach((update)=> lab[update] = req.body[update])
                 await lab.save()

@@ -1,5 +1,7 @@
 const express = require('express')
 const Patient = require('../models/patient')
+const jwt=require('jsonwebtoken')
+const auth=require('../middleware/auth')
 
 const router = new express.Router()
 
@@ -16,7 +18,31 @@ router.post('/patient',async (req,res)=>{
     }
 })
 
-router.patch('/patient/:id', async(req,res)=>{
+router.post('/patient/login',async (req,res)=>{
+    try{
+    const patient= await Patient.findByCredentials(req.body.email,req.body.password)
+    const token = await patient.generateAuthToken()
+    console.log(patient)
+    console.log(token)
+    res.send({patient,token})
+    }catch(e){
+        res.status(401).send(e)
+    }
+})
+
+router.post('/patient/logout',auth.authPatient,async (req,res)=>{
+    try{
+        req.patient.tokens=req.patient.tokens.filter((token)=>{
+            return token.token !== req.token 
+        })
+        await req.patient.save()
+        res.send(req.patient)
+    }catch(e){
+        res.status(400).send()
+    }
+})
+
+router.patch('/patient', auth.authPatient, async(req,res)=>{
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'contact_no','email', 'address','height', 'weight','dateOfBirth','bloodGroup','allergies']
     const isValidOperation = updates.every((update)=>allowedUpdates.includes(update))
@@ -26,7 +52,7 @@ router.patch('/patient/:id', async(req,res)=>{
     }
 
     try{
-            const patient = await Patient.findOne({HCID:req.params.id})
+            const patient = req.patient
             if(!patient){
                     res.status(404).send({error:'patient not found'})
             }

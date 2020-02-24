@@ -1,6 +1,8 @@
 const express = require('express')
 const LabDoctor = require('../models/labDoctor.js')
 const Lab = require('../models/lab')
+const jwt=require('jsonwebtoken')
+const auth=require('../middleware/auth')
 
 const router = new express.Router()
 
@@ -18,6 +20,30 @@ router.post('/labDoctor',async(req,res)=>{
     }catch(e){
             res.status(400).send(e)
             console.log(e)
+    }
+})
+
+router.post('/labdoctor/login',async (req,res)=>{
+    try{
+    const labdoctor= await LabDoctor.findByCredentials(req.body.email,req.body.password)
+    const token = await labdoctor.generateAuthToken()
+    console.log(labdoctor)
+    console.log(token)
+    res.send({labdoctor,token})
+    }catch(e){
+        res.status(401).send(e)
+    }
+})
+
+router.post('/labdoctor/logout',auth.authLabDoctor,async (req,res)=>{
+    try{
+        req.labdoctor.tokens=req.labdoctor.tokens.filter((token)=>{
+            return token.token !== req.token 
+        })
+        await req.labdoctor.save()
+        res.send(req.labdoctor)
+    }catch(e){
+        res.status(400).send()
     }
 })
 

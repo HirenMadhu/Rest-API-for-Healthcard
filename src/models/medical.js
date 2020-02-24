@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const bcrypt=require('bcryptjs')
+const jwt=require('jsonwebtoken')
 
 const prefix = 'M'
 var nextID = 1
@@ -51,7 +53,13 @@ const medicalSchema = new mongoose.Schema({
         required: true,
         min: 100000,
         max: 999999
-    }
+    },
+    tokens:[{
+        token:{
+            type:String,
+            required:true
+        }
+    }]
 })
 
 medicalSchema.statics.getNextID = function(){
@@ -76,6 +84,42 @@ medicalSchema.statics.getNextID = function(){
     }
     return ID
 }
+
+medicalSchema.methods.generateAuthToken= async function(){
+    const medical = this
+    const token=jwt.sign({_id:medical._id.toString()},'thisismynewcourse')
+    medical.tokens=medical.tokens.concat({ token })
+    await medical.save()
+    return token
+}
+
+medicalSchema.statics.findByCredentials=async(email,password)=>{
+    try{
+        const medical=await Medical.findOne({email})
+
+        if(!medical){
+         throw new Error('unable to login')
+        }
+
+        const isMatch= await bcrypt.compare(password,medical.password)
+
+        if(!isMatch){
+            throw new Error('unable to login')
+        }
+        console.log(isMatch)
+        return medical
+    }catch(e){
+        console.log(e)
+    }
+}
+
+medicalSchema.pre('save',async function (next){
+    const medical = this
+    if(medical.isModified('password')){
+        medical.password = await bcrypt.hash(medical.password,8)
+    }
+    next()
+})
 
 const Medical = new mongoose.model('Medical',medicalSchema)
 

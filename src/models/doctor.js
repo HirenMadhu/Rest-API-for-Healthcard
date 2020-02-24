@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
-const sendMail = require('../emails/sendMail')
+const bcrypt=require('bcryptjs')
+const jwt=require('jsonwebtoken')
+
 
 const prefix = 'D'
 var nextID = 1
@@ -54,21 +56,24 @@ const doctorSchema = new mongoose.Schema({
         default:[]
     },
     password:{
-        type:Number,
+        type:String,
+        minlength:6,
         required: true,
-        min: 100000,
-        max: 999999
+        validate(value){
+            if(value.toLowerCase().includes('password')){
+                throw new Error('password cannot contain "password"')
+            }
+        }
     },
     rand:{
         type:Number
-    }
-})
-
-doctorSchema.pre("save", async function (next){
- 
-    const doctor = this
-    sendMail(doctor, 'doctor', doctor.rand)
-    next()
+    },
+    tokens:[{
+        token:{
+            type:String,
+            required:true
+        }
+    }]
 })
 
 doctorSchema.statics.getNextID = function(){
@@ -93,6 +98,48 @@ doctorSchema.statics.getNextID = function(){
     }
     return ID
 }
+
+doctorSchema.methods.generateAuthToken= async function(){
+    const doctor = this
+    const token=jwt.sign({_id:doctor._id.toString()},'thisismynewcourse')
+    doctor.tokens=doctor.tokens.concat({ token })
+    await doctor.save()
+    return token
+}
+
+doctorSchema.statics.findByCredentials=async(email,password)=>{
+    try{
+    const doctor=await Doctor.findOne({email})
+    //console.log(doctor)
+
+    if(!doctor){
+        throw new Error('unable to login')
+    }
+
+    const isMatch= await bcrypt.compare(password,doctor.password)
+
+    if(!isMatch){
+        throw new Error('unable to login')
+    }
+    console.log(isMatch)
+    return doctor
+}catch(e){
+    console.log(e)
+}
+}
+
+doctorSchema.pre('save',async function (next){
+
+    const doctor = this
+
+    if(doctor.isModified('password')){
+        doctor.password = await bcrypt.hash(doctor.password,8)
+       
+    }
+    console.log(doctor.password)
+    next()
+
+})
 
 const Doctor = mongoose.model('Doctor', doctorSchema)
 

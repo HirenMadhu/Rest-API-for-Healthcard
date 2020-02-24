@@ -2,23 +2,25 @@ const nodemailer = require('nodemailer')
 const generateMessage = require('./message')
 async function sendMail(user,strUser,rand)
 {   
-    var id ='something'
+    var id =''
+    var name = ''
     if(strUser=='patient'){
         id = user.HCID
+        name = user.name.firstName
     }else if(strUser=='doctor'){
         id = user.DID
+        name = user.name.firstName
     }else if(strUser=='hospital'){
         id = user.HID
+        name = user.name
     }else if(strUser=='labdoctor'){
         id = user.LDID
+        name = user.name.firstName
     }else if(strUser=='lab'){
         id = user.LID
+        name = user.name
     }
-    if(strUser.includes("doctor patient labdoctor")){
-        msg = generateMessage(id,user.name.firstName,rand)
-    }else{
-        msg = generateMessage(id,user.name,rand)
-    }
+    msg = generateMessage(id,name,rand)
     try{
         let transporter = nodemailer.createTransport({
             service:'gmail', 

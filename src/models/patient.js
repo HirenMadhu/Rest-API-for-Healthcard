@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const bcrypt=require('bcryptjs')
+const jwt=require('jsonwebtoken')
 
 const prefix = 'HC'
 var nextID = 1
@@ -77,7 +79,23 @@ const patientSchema = new mongoose.Schema({
      ongoingMedicines:{
         type: Array,
         default:[]
-     }
+     },
+     password:{
+        type:String,
+        minlength:6,
+        required: true,
+        validate(value){
+            if(value.toLowerCase().includes('password')){
+                throw new Error('password cannot contain "password"')
+            }
+        }
+    },
+     tokens:[{
+         token:{
+             type:String,
+             required:true
+         }
+     }]
 })
 
 patientSchema.statics.getNextID = function(){
@@ -102,6 +120,42 @@ patientSchema.statics.getNextID = function(){
     }
     return ID
 }
+
+patientSchema.methods.generateAuthToken= async function(){
+    const patient = this
+    const token=jwt.sign({_id:patient._id.toString()},'thisismynewcourse')
+    patient.tokens=patient.tokens.concat({ token })
+    await patient.save()
+    return token
+}
+
+patientSchema.statics.findByCredentials=async(email,password)=>{
+    try{
+        const patient=await Patient.findOne({email})
+
+        if(!patient){
+         throw new Error('unable to login')
+        }
+
+        const isMatch= await bcrypt.compare(password,patient.password)
+
+        if(!isMatch){
+            throw new Error('unable to login')
+        }
+        console.log(isMatch)
+        return patient
+    }catch(e){
+        console.log(e)
+    }
+}
+
+patientSchema.pre('save',async function (next){
+    const patient = this
+    if(patient.isModified('password')){
+        patient.password = await bcrypt.hash(patient.password,8)
+    }
+    next()
+})
 
 const Patient = new mongoose.model('Patient', patientSchema)
 

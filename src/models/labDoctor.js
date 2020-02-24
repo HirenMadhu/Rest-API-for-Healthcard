@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const bcrypt=require('bcryptjs')
+const jwt=require('jsonwebtoken')
 
 const prefix = 'LD'
 var nextID = 1
@@ -58,7 +60,13 @@ const labDoctorSchema = mongoose.Schema({
         required: true,
         min: 100000,
         max: 999999
-    }
+    },
+    tokens:[{
+        token:{
+            type:String,
+            required:true
+        }
+    }]
 })
 
 labDoctorSchema.statics.getNextID = function(){
@@ -83,6 +91,42 @@ labDoctorSchema.statics.getNextID = function(){
     }
     return ID
 }
+
+labDoctorSchema.methods.generateAuthToken= async function(){
+    const labdoctor = this
+    const token=jwt.sign({_id:labdoctor._id.toString()},'thisismynewcourse')
+    labdoctor.tokens=labdoctor.tokens.concat({ token })
+    await labdoctor.save()
+    return token
+}
+
+labDoctorSchema.statics.findByCredentials=async(email,password)=>{
+    try{
+        const labdoctor=await LabDoctor.findOne({email})
+
+        if(!labdoctor){
+         throw new Error('unable to login')
+        }
+
+        const isMatch= await bcrypt.compare(password,labdoctor.password)
+
+        if(!isMatch){
+            throw new Error('unable to login')
+        }
+        console.log(isMatch)
+        return labdoctor
+    }catch(e){
+        console.log(e)
+    }
+}
+
+labDoctorSchema.pre('save',async function (next){
+    const labdoctor = this
+    if(labdoctor.isModified('password')){
+        labdoctor.password = await bcrypt.hash(labdoctor.password,8)
+    }
+    next()
+})
 
 const LabDoctor = new mongoose.model('LabDoctor', labDoctorSchema)
 

@@ -1,6 +1,9 @@
 const express = require('express')
 const Doctor = require('../models/doctor')
 const Hospital = require('../models/hospital')
+const sendMail = require('../emails/sendMail')
+const jwt=require('jsonwebtoken')
+const auth=require('../middleware/auth')
 
 const router = new express.Router()
 
@@ -17,6 +20,7 @@ router.post('/doctor',async (req,res)=>{
         console.log(doctor)
         await Hospital.findOneAndUpdate({"HID":doctor.HID}, {doctors})
         await doctor.save()
+        sendMail(doctor, 'doctor', doctor.rand)
         res.status(200).send(doctor)
     }catch(e){
         res.status(400).send(e)
@@ -30,6 +34,7 @@ router.post('/doctor/verify',async (req,res)=>{
         console.log(doctor.rand)
         if(doctor.rand==req.body.rand){
             delete doctor.rand
+            console.log(doctor)
             await doctor.save()
             res.status(200).send({msg:"verified doctor"})
         }else{
@@ -42,7 +47,33 @@ router.post('/doctor/verify',async (req,res)=>{
     }
 })
 
-router.patch('/doctor/:id', async (req,res) => {
+router.post('/doctor/login',async (req,res)=>{
+    try{
+    const doctor= await Doctor.findByCredentials(req.body.email,req.body.password)
+    const token = await doctor.generateAuthToken()
+    console.log(doctor)
+    console.log(token)
+    res.send({doctor,token})
+    }catch(e){
+        res.status(401).send(e)
+
+    }
+})
+
+router.post('/doctor/logout',auth.authDoctor,async (req,res)=>{
+    try{
+        req.doctor.tokens=req.doctor.tokens.filter((token)=>{
+            return token.token !== req.token 
+        })
+        await req.doctor.save()
+        res.send(req.doctor)
+    }catch(e){
+        res.status(400).send()
+
+    }
+})
+
+router.patch('/doctor/:id', auth.authDoctor,async (req,res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'contact_no','email', 'address','degree', 'HID', 'password']
     const isValidOperation = updates.every((update)=>allowedUpdates.includes(update))

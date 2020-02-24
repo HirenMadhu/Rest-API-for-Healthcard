@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const bcrypt=require('bcryptjs')
+const jwt=require('jsonwebtoken')
 
 const prefix = 'L'
 var nextID = 1
@@ -58,7 +60,13 @@ const labSchema = new mongoose.Schema({
         required: true,
         min: 100000,
         max: 999999
-    }
+    },
+    tokens:[{
+        token:{
+            type:String,
+            required:true
+        }
+    }]
 })
 
 labSchema.statics.getNextID = function(){
@@ -83,6 +91,42 @@ labSchema.statics.getNextID = function(){
     }
     return ID
 }
+
+labSchema.methods.generateAuthToken= async function(){
+    const lab = this
+    const token=jwt.sign({_id:lab._id.toString()},'thisismynewcourse')
+    lab.tokens=lab.tokens.concat({ token })
+    await lab.save()
+    return token
+}
+
+labSchema.statics.findByCredentials=async(email,password)=>{
+    try{
+        const lab=await Lab.findOne({email})
+
+        if(!lab){
+         throw new Error('unable to login')
+        }
+
+        const isMatch= await bcrypt.compare(password,lab.password)
+
+        if(!isMatch){
+            throw new Error('unable to login')
+        }
+        console.log(isMatch)
+        return lab
+    }catch(e){
+        console.log(e)
+    }
+}
+
+labSchema.pre('save',async function (next){
+    const lab = this
+    if(lab.isModified('password')){
+        lab.password = await bcrypt.hash(lab.password,8)
+    }
+    next()
+})
 
 const Lab = mongoose.model('Lab', labSchema)
 
