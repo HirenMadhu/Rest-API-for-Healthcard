@@ -4,11 +4,16 @@ const Hospital = require('../models/hospital')
 const sendMail = require('../emails/sendMail')
 const jwt=require('jsonwebtoken')
 const auth=require('../middleware/auth')
-
+const bodyParser = require('body-parser')
 const router = new express.Router()
 
-router.post('/doctor',async (req,res)=>{
+const bodyParser = require('body-parser')
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
+
+router.post('/doctor',urlencodedParser,async (req,res)=>{
+    const temp = {"firstName":req.body.firstName,"lastName":req.body.lastName}
     const doctor = new Doctor(req.body)
+    doctor.name = temp
     doctor.DID = Doctor.getNextID()
     console.log(doctor)
     try{
