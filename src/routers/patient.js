@@ -3,6 +3,8 @@ const Patient = require('../models/patient')
 const jwt=require('jsonwebtoken')
 const auth=require('../middleware/auth')
 const sendMail = require('../emails/sendMail')
+const multer = require('multer')
+const sharp = require('sharp')
 
 const router = new express.Router()
 
@@ -86,5 +88,53 @@ router.patch('/patient', auth.authPatient, async(req,res)=>{
     }
 })
 
+const profilePic = multer({
+    limits:{
+        fileSize:1000000
+    },
+    fileFilter(req,file,cb){
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
+            return cb(new Error('Please upload an image!'))
+        }
+
+        cb(undefined, true)
+    }
+})
+
+router.post('/patient/avatar', auth.authPatient, profilePic.single('avatar'), async(req,res)=>{
+    const buffer =  await sharp(req.file.buffer).resize({width:250, height:250}).png().toBuffer()
+    req.patient.avatar = buffer
+    await req.patient.save()
+    res.send()
+}, (error, req,res,next)=>{
+    res.status(400).send({error:error.message})
+})
+
+router.post('/patient/avatar', auth.authPatient, async(req,res)=>{
+    req.patient.avatar = undefined
+    await req.patient.save()
+    res.send()
+}, (error, req,res,next)=>{
+    res.status(400).send({error:error.message})
+})
+
+router.get('/patient/:id/avatar', auth.authPatient, async(req,res)=>{
+    try{
+        const patient  = await Patient.findById(req.params.id)
+        if(!patient || !patient.avatar){
+            throw new Error()
+        }
+
+        res.set('Content-Type', 'image/png')
+        res.send(patient.avatar)
+    }catch(e){
+        res.status(404).send()
+    }
+})
+
+router.post('/test',(req,res)=>{
+    const data = req.toJSON()
+    res.send(data.msg)
+})
 
 module.exports = router

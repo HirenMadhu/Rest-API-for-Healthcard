@@ -90,12 +90,19 @@ const patientSchema = new mongoose.Schema({
             }
         }
     },
+    verificationDone:{
+        type:Boolean,
+        default:false
+    },
      tokens:[{
          token:{
              type:String,
              required:true
          }
-     }]
+     }],
+     avatar:{
+         type:Buffer
+     }
 })
 
 patientSchema.statics.getNextID = function(){
