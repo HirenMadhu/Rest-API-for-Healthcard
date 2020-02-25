@@ -133,7 +133,9 @@ router.get('/patient/:id/avatar', auth.authPatient, async(req,res)=>{
 })
 
 router.post('/test',(req,res)=>{
+    console.log("hello")
     res.send('good morning')
+
 })
 
 module.exports = router
