@@ -7,7 +7,6 @@ const auth=require('../middleware/auth')
 const bodyParser = require('body-parser')
 const router = new express.Router()
 
-const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 router.post('/doctor',urlencodedParser,async (req,res)=>{
