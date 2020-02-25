@@ -132,9 +132,10 @@ router.get('/patient/:id/avatar', auth.authPatient, async(req,res)=>{
     }
 })
 
-router.post('/test',(req,res)=>{
+router.get('/test',(req,res)=>{
+    const data={"msg":"Good morning!"}
     console.log("hello")
-    res.send('good morning')
+    res.send(data)
 
 })
 
