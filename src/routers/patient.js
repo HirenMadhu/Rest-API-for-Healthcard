@@ -133,8 +133,9 @@ router.get('/patient/:id/avatar', auth.authPatient, async(req,res)=>{
 })
 
 router.post('/test',(req,res)=>{
-    const data = req.body.toJSON()
-    res.send(data.msg)
+    const textData = req.body
+    const jsonData = JSON.parse(textData)
+    res.send(jsonData.msg)
 })
 
 module.exports = router
