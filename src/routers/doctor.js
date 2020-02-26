@@ -48,9 +48,10 @@ router.post('/doctor/verify',async (req,res)=>{
     }
 })
 
-router.post('/doctor/login',async (req,res)=>{
+router.post('/doctor/login',urlencodedParser,async (req,res)=>{
     try{
-    const doctor= await Doctor.findByCredentials(req.body.email,req.body.password)
+    console.log('called from the server')
+    const doctor= await Doctor.findByCredentials(req.body.DID,req.body.password)
     const token = await doctor.generateAuthToken()
     console.log(doctor)
     console.log(token)

@@ -164,6 +164,15 @@ patientSchema.pre('save',async function (next){
     next()
 })
 
+patientSchema.methods.toJSON = function() {
+    const patient = this
+    const patientObject = patient.toObject()
+
+    delete patientObject.password
+    delete patientObject.tokens
+    delete patientObject.avatar
+}
+
 const Patient = new mongoose.model('Patient', patientSchema)
 
 module.exports = Patient

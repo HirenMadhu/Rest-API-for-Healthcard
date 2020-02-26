@@ -107,10 +107,9 @@ doctorSchema.methods.generateAuthToken= async function(){
     return token
 }
 
-doctorSchema.statics.findByCredentials=async(email,password)=>{
+doctorSchema.statics.findByCredentials=async(DID,password)=>{
     try{
-    const doctor=await Doctor.findOne({email})
-    //console.log(doctor)
+    const doctor=await Doctor.findOne({DID})
 
     if(!doctor){
         throw new Error('unable to login')
@@ -121,7 +120,6 @@ doctorSchema.statics.findByCredentials=async(email,password)=>{
     if(!isMatch){
         throw new Error('unable to login')
     }
-    console.log(isMatch)
     return doctor
 }catch(e){
     console.log(e)

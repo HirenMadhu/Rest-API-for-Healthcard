@@ -50,7 +50,7 @@ router.post('/patient/login',async (req,res)=>{
     console.log(token)
     res.send({patient,token})
     }catch(e){
-        res.status(401).send(e)
+        res.status(401).send({"error":"Enter correct credentials"})
     }
 })
 
@@ -136,7 +136,6 @@ router.get('/test',(req,res)=>{
     const data={"msg":"Good morning!"}
     console.log("hello")
     res.send(data)
-
 })
 
 module.exports = router
