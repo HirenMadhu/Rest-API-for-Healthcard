@@ -27,7 +27,7 @@
     "mongoose": "^5.8.7",
     "multer": "^1.4.2",
     "nodemailer": "^6.4.2",
-    "nodeshift": "^6.0.1",
+    "nodeshift": "^13.0.0",
     "rhc": "0.0.1",
     "sharp": "^0.24.1",
     "validator": "^12.1.0"
